@@ -1,0 +1,4 @@
+﻿  ProceduralGen.cpp
+D:\GitHub\ProceduralGen\ProceduralGen.cpp(43,7): warning C4101: 'buf': unreferenced local variable
+D:\GitHub\ProceduralGen\ProceduralGen.cpp(274,41): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+  ProceduralGen.vcxproj -> D:\GitHub\ProceduralGen\Debug\ProceduralGen.exe

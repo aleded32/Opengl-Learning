@@ -1,0 +1,2 @@
+D:\GitHub\ProceduralGen\Debug\ProceduralGen.exe
+D:\GitHub\ProceduralGen\Debug\ProceduralGen.pdb
