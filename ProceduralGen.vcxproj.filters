@@ -22,15 +22,26 @@
     <Filter Include="Source Files\src">
       <UniqueIdentifier>{4eb4e38c-8d4f-42cd-bfa7-eae67f7674d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\vendor">
+      <UniqueIdentifier>{e408d36f-1ce3-4f85-a7e5-6ddbc35c6f34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ProceduralGen.cpp">
       <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Source Files\vendor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader">
       <Filter>Source Files\res\shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stb_image.h">
+      <Filter>Source Files\vendor</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

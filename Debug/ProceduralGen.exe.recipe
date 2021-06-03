@@ -5,7 +5,11 @@
       <FullPath>D:\GitHub\ProceduralGen\Debug\ProceduralGen.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>D:\GitHub\ProceduralGen\ProceduralGen.cpp</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

@@ -3,6 +3,7 @@
 #include <glfw3.h>
 #include <Iostream>
 #include <sstream>
+#include "stb_image.h"
 
 //this is macro that allows us to break the debugger by asserting itself when the error boolean is true. 
  //debugbreak is visual studio compiler specific; 
@@ -18,6 +19,71 @@ struct shaderSourceProgram
 	std::string fragmentSource;
 };
 
+//textures
+unsigned char* m_localBuffer;
+int m_width, m_height, m_bitsPerPixel;
+unsigned int m_rendererID;
+std::string m_filepath;
+
+
+
+void textureCreate(const std::string& path)
+{
+	m_rendererID = 0;
+	m_localBuffer = nullptr;
+	m_width = 0;
+	m_height = 0;
+	m_bitsPerPixel = 0;
+	m_filepath = path;
+
+	//need to flip image as opengl reads pixels from the bottom left not top left. 
+	stbi_set_flip_vertically_on_load(1);
+	//sets the local buffer of the data of png file we are loading into the buffer.
+	//channels in file is the bits per pixel and the desired channels is teh colour so four for rgba
+	m_localBuffer = stbi_load(path.c_str(), &m_width, &m_height, &m_bitsPerPixel, 4);
+
+
+	//generate a texture slot
+	glGenTextures(1, &m_rendererID);
+	//will bind the texture to the renderer id, with texture 2d
+	glBindTexture(GL_TEXTURE_2D, m_rendererID);
+
+	//all the parameters needed to display our texture, refer to documentation for different parameter types
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer);
+
+	
+	if (m_localBuffer)
+		stbi_image_free(m_localBuffer);
+
+
+
+}
+
+void destructorTex() 
+{
+	glDeleteTextures(1, &m_rendererID);
+}
+
+//if parameter = something, means its an optional parameter that will default to something if not used
+void bind(unsigned int slot = 0) 
+{
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, m_rendererID);
+
+}
+void unbind() 
+{
+	
+}
+
+
+
+//end of texture code
 bool error = false;
 
 
@@ -113,6 +179,7 @@ static unsigned int complileShader(const std::string& source, unsigned int type)
 			std::cout << message << std::endl;
 			glDeleteShader(id);
 			return 0;
+
 		}
 
 		return id;
@@ -190,12 +257,13 @@ int main()
 	glEnable(GL_DEBUG_OUTPUT); //enables debug output
 	glDebugMessageCallback(messageCallback, 0); // produces and calls back the error that was produced. 
 
+	//contains data about the vertex
 	float vertexPos[] =
-	{
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f, 0.5f,
-		-0.5, 0.5f,
+	{//  /vertex    / TexCoord  /
+		-0.5f, -0.5f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 1.0f, 0.0f,
+		 0.5f, 0.5f,  1.0f, 1.0f,
+		-0.5, 0.5f,   0.0, 1.0f,
 
 	};
 
@@ -221,15 +289,20 @@ int main()
 	//binds it to an actual array buffer
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	//inputs the data for buffer, specifies the buffer used, size of the buffer, the data itself(vertices) and how its being drawn
-	glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), vertexPos, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(float), vertexPos, GL_STATIC_DRAW);
 
 
 	
 
-	//attributes are different components of the vertex (positon, colour etc) // use documentation for rest of info.
+	//attributes are different components of the vertex (positon, colour etc) 
+	// use documentation for rest of info.
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
 	//NEEDED TO ENABLE THE ATTRIBUTE!
 	glEnableVertexAttribArray(0);
+
+	 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (const void*) 8); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
+	//NEEDED TO ENABLE THE ATTRIBUTE!
+	glEnableVertexAttribArray(1);
 
 	unsigned int ibo; //index buffer object
 	glGenBuffers(1, &ibo);
@@ -239,10 +312,11 @@ int main()
 
 	//shader will be read from file
 	shaderSourceProgram source = ParseShader("res/shaders/basic.shader");
-	std::cout << "vertex" << std::endl;
+	/*std::cout << "vertex" << std::endl;
 	std::cout << source.vertexSource << std::endl;
 	std::cout << "fragment" << std::endl;
 	std::cout << source.fragmentSource << std::endl;
+	*/
 
 	//creates the shader
 	unsigned int shader = createShader(source.vertexSource, source.fragmentSource);
@@ -251,10 +325,19 @@ int main()
 
 	//uniforms allow us put data into a shader, before a drawing of the object starts
 	//first value is the location of the shader, which is set in the shader
-	int location = glGetUniformLocation(shader, "u_color");
-	ASSERT(location != -1);
+	/*int location = glGetUniformLocation(shader, "u_color");
+	ASSERT(location != -1);*/
 	float r = 0;
 	float increment = 0.05f;
+
+
+	//call our texture methods
+	textureCreate("res/textures/knight.png");
+	bind(0);
+	//shader needs to sample the texture in order to render it to the screen. the last param is the slot of the binded texture
+	ASSERT(glGetUniformLocation(shader, "u_Texture") != -1);
+	glUniform1i(glGetUniformLocation(shader, "u_Texture"), 0);
+
 
 	//this will unbind everything before rebinding in loop
 	glUseProgram(0);
@@ -271,7 +354,9 @@ int main()
 
 		//rebound at runtime
 		glUseProgram(shader);
-		glUniform4f(location, r, 0.8, 0.1, 1.0);
+		//glUniform4f(location, r, 0.8, 0.1, 1.0);
+		
+		//std::cout << glGetUniformLocation(shader, "u_Texture") << std::endl;
 		
 		//we can remove the arrtibpointer and attribarray from runtime and the bind buffer, just with binding the vao to get the same outcome
 		//we are linking the buffer to the vertex array in the vertexarribpointer.
@@ -291,7 +376,7 @@ int main()
 		call(glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_INT, nullptr);)
 		
 			//just to show it changing the throug colours and demonstrate the use of uniforms.
-			if (r < 0) 
+			/*if (r < 0) 
 			{
 				increment = 0.05f;
 			}
@@ -301,7 +386,7 @@ int main()
 			}
 
 		r += increment;
-
+		*/
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
