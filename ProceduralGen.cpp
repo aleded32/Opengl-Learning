@@ -235,7 +235,7 @@ int main()
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // this allows the message to be seen in console
 
-	window = glfwCreateWindow(640, 480, "Test Area", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, "Test Area", NULL, NULL);
 
 	if (!window) 
 	{
@@ -274,6 +274,9 @@ int main()
 		2,3,0
 	};
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
 	//vertex array object, this needs to be created in order to bind buffers and specify layouts. 
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
@@ -296,13 +299,15 @@ int main()
 
 	//attributes are different components of the vertex (positon, colour etc) 
 	// use documentation for rest of info.
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
 	//NEEDED TO ENABLE THE ATTRIBUTE!
 	glEnableVertexAttribArray(0);
 
 	 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (const void*) 8); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
 	//NEEDED TO ENABLE THE ATTRIBUTE!
 	glEnableVertexAttribArray(1);
+
+
 
 	unsigned int ibo; //index buffer object
 	glGenBuffers(1, &ibo);

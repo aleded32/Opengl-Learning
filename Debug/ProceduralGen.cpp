@@ -235,7 +235,7 @@ int main()
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // this allows the message to be seen in console
 
-	window = glfwCreateWindow(640, 480, "Test Area", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, "Test Area", NULL, NULL);
 
 	if (!window) 
 	{
@@ -273,6 +273,9 @@ int main()
 		0,1,2,
 		2,3,0
 	};
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 
 	//vertex array object, this needs to be created in order to bind buffers and specify layouts. 
 	unsigned int vao;
