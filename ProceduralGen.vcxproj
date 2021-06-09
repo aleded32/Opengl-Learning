@@ -148,13 +148,19 @@
     <ClCompile Include="ProceduralGen.cpp">
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
-    <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="src\indexBuffer.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\vertexbuffer.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="src\indexBuffer.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\vertexbuffer.h" />
+    <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

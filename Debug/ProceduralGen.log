@@ -1,3 +1,3 @@
 ﻿  ProceduralGen.cpp
-D:\GitHub\ProceduralGen\ProceduralGen.cpp(109,7): warning C4101: 'buf': unreferenced local variable
+D:\GitHub\ProceduralGen\ProceduralGen.cpp(99,7): warning C4101: 'buf': unreferenced local variable
   ProceduralGen.vcxproj -> D:\GitHub\ProceduralGen\Debug\ProceduralGen.exe

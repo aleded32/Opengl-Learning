@@ -1,17 +1,7 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <glew.h>
-#include <glfw3.h>
-#include <Iostream>
-#include <sstream>
-#include "stb_image.h"
+#include "src/vertexbuffer.h"
+#include "src/indexBuffer.h"
 
-//this is macro that allows us to break the debugger by asserting itself when the error boolean is true. 
- //debugbreak is visual studio compiler specific; 
-//this should be wrapped around all GL functions;
-#define call(x) x;\
-	if(error) __debugbreak();
 
-#define ASSERT(x) if(!(x)) __debugbreak();\
 
 struct shaderSourceProgram 
 {
@@ -215,44 +205,11 @@ static unsigned int createShader(const std::string& vertexShader, const std::str
 int main() 
 {
 	
-	GLFWwindow* window;
+	renderer Renderer(1280,720, "Test");
+	Renderer.createWindow();
 	
-	//unsigned int  = GLuint
+
 	
-
-
-	if (!glfwInit()) 
-	{
-		
-		return -1;
-	}
-
-	//these 3 lines of code hints to glfw that we want to run in the core version of opengl 4, without this
-	//it will run in compatability mode. we need this as we need to create our own vertex array;
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // this allows the message to be seen in console
-
-	window = glfwCreateWindow(1280, 720, "Test Area", NULL, NULL);
-
-	if (!window) 
-	{
-		glfwTerminate();
-	}
-
-	glfwMakeContextCurrent(window);
-
-	//limits the frame rate to refresh rate of screen;
-	glfwSwapInterval(1);
-
-	GLenum err = glewInit();
-	
-	if (GLEW_OK != err)
-		std::cout << glewGetErrorString(err);
-
-	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	glEnable(GL_DEBUG_OUTPUT); //enables debug output
 	glDebugMessageCallback(messageCallback, 0); // produces and calls back the error that was produced. 
@@ -282,7 +239,7 @@ int main()
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	// Buffer to store data for vertices of shape. Static doesn't allow the change of vertices and is accessed many times.
+	/* Buffer to store data for vertices of shape. Static doesn't allow the change of vertices and is accessed many times.
 	//dynamic allows new data in the buffer and used many times. 
 	
 	//required to store address of data
@@ -293,13 +250,19 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	//inputs the data for buffer, specifies the buffer used, size of the buffer, the data itself(vertices) and how its being drawn
 	glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(float), vertexPos, GL_STATIC_DRAW);
+	*/
 
 
+
+	vertexBuffer vb(4*4*sizeof(float), vertexPos);
+	vb.bind();
+	
+	
 	
 
 	//attributes are different components of the vertex (positon, colour etc) 
 	// use documentation for rest of info.
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0); // this code specifiys which vertex array buffer to use with an index of zero binding the vertex buffer to the vertex array
 	//NEEDED TO ENABLE THE ATTRIBUTE!
 	glEnableVertexAttribArray(0);
 
@@ -307,11 +270,19 @@ int main()
 	//NEEDED TO ENABLE THE ATTRIBUTE!
 	glEnableVertexAttribArray(1);
 
+
+	/*
 	unsigned int ibo; //index buffer object
 	glGenBuffers(1, &ibo);
 	//this uses gl elemetn array buffer as we are binding the incides the vertices will use.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW);
+	*/
+
+	indexBuffer ib(indicies, 6);
+	ib.bind();
+
+
 
 	//shader will be read from file
 	shaderSourceProgram source = ParseShader("res/shaders/basic.shader");
@@ -344,13 +315,14 @@ int main()
 
 	//this will unbind everything before rebinding in loop
 	glUseProgram(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	ib.unbind();
+	vb.unbind();
 	glBindVertexArray(0);
 
 
 	/* Loop until the user closes the window */
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(Renderer.getWindow()))
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -370,13 +342,13 @@ int main()
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 		glEnableVertexAttribArray(0);
-		*/
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		*/
 
 		//count = number of indices
 		
-		call(glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_INT, nullptr);)
+		call(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indicies);)
 		
 			//just to show it changing the throug colours and demonstrate the use of uniforms.
 			/*if (r < 0) 
@@ -391,7 +363,7 @@ int main()
 		r += increment;
 		*/
 		/* Swap front and back buffers */
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(Renderer.getWindow());
 
 		/* Poll for and process events */
 		glfwPollEvents();
