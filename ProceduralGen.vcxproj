@@ -145,11 +145,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ProceduralGen.cpp">
+    <ClCompile Include="src\bufferLayout.cpp" />
+    <ClCompile Include="src\ProceduralGen.cpp">
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <ClCompile Include="src\indexBuffer.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\vertexbuffer.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
@@ -157,8 +160,11 @@
     <None Include="basic.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\bufferLayout.h" />
     <ClInclude Include="src\indexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\texture.h" />
+    <ClInclude Include="src\vertexArray.h" />
     <ClInclude Include="src\vertexbuffer.h" />
     <ClInclude Include="src\stb_image.h" />
   </ItemGroup>

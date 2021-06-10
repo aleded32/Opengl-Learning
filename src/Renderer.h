@@ -26,11 +26,14 @@ private:
 
 public:
 
-	GLFWwindow* getWindow() 
+	inline GLFWwindow* getWindow() 
 	{
 		return window;
 	}
 
+	inline const int getWidth() { return m_width; }
+	inline const int getHeight() { return m_height; }
+	
 	renderer(const int& width, const int& height, const char* name)
 		: m_width(width), m_height(height), m_name(name) {}
 
