@@ -1,5 +1,5 @@
 #pragma once
-#include "Renderer.h"
+#include<glew.h>
 
 class indexBuffer 
 {
@@ -11,6 +11,11 @@ public:
 
 	indexBuffer(const void* data, unsigned int count);
 	~indexBuffer();
+
+	const unsigned int getCount() const& 
+	{
+		return m_count;
+	}
 
 	void bind() const;
 

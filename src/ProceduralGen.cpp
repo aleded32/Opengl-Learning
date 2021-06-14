@@ -1,15 +1,14 @@
+#include "Renderer.h"
 #include "vertexbuffer.h"
-#include "indexBuffer.h"
-#include "vertexArray.h"
 #include "bufferLayout.h"
 #include "texture.h"
 
 
-struct shaderSourceProgram 
+/*struct shaderSourceProgram 
 {
 	std::string vertexSource;
 	std::string fragmentSource;
-};
+}*/
 
 
 
@@ -18,17 +17,9 @@ struct shaderSourceProgram
 
 
 //end of texture code
-bool error = false;
 
 
-//new version of getting errors this needs to be set in order to call and recieve debug info.
-void APIENTRY messageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) 
-{
-	std::cout << source << "\n" << type << "\n" << message << std::endl;
-	error = true;
-}
-
-static shaderSourceProgram ParseShader(const std::string& filepath) 
+/*static shaderSourceProgram ParseShader(const std::string& filepath) 
 {
 	FILE* fp;
 	
@@ -83,9 +74,9 @@ static shaderSourceProgram ParseShader(const std::string& filepath)
 	
 	return{ ss[(int)shaderType::VERTEX].str(), ss[(int)shaderType::FRAGMENT].str() };
 
-}
+}*/
 
-//grabs the shader and compiles it.
+/*grabs the shader and compiles it.
 static unsigned int complileShader(const std::string& source, unsigned int type) 
 {
 	//creates shader id
@@ -123,9 +114,9 @@ static unsigned int complileShader(const std::string& source, unsigned int type)
 		std::cout << "could not grab source of shader";
 		return 0;
 	}
-}
+}*/
 
-//creates the complete shader for us to compile. 
+/*creates the complete shader for us to compile. 
 static unsigned int createShader(const std::string& vertexShader, const std::string& fragmentShader) 
 {
 	unsigned int program = glCreateProgram();
@@ -144,7 +135,7 @@ static unsigned int createShader(const std::string& vertexShader, const std::str
 	glDeleteShader(fs);
 
 	return program;
-}
+}*/
 
 int main() 
 {
@@ -232,10 +223,10 @@ int main()
 	indexBuffer ib(indicies, 6);
 	ib.bind();
 
-
+	shader Shader("res/Shaders/basic.shader");
 
 	//shader will be read from file
-	shaderSourceProgram source = ParseShader("res/shaders/basic.shader");
+	//shaderSourceProgram source = ParseShader("res/shaders/basic.shader");
 	/*std::cout << "vertex" << std::endl;
 	std::cout << source.vertexSource << std::endl;
 	std::cout << "fragment" << std::endl;
@@ -243,9 +234,9 @@ int main()
 	*/
 
 	//creates the shader
-	unsigned int shader = createShader(source.vertexSource, source.fragmentSource);
+	//unsigned int shader = createShader(source.vertexSource, source.fragmentSource);
 	//uses the shader
-	glUseProgram(shader);
+	//glUseProgram(shader);
 
 	//uniforms allow us put data into a shader, before a drawing of the object starts
 	//first value is the location of the shader, which is set in the shader
@@ -259,13 +250,14 @@ int main()
 	texture tex("res/textures/knight.png");
 	tex.bind(0);
 	//shader needs to sample the texture in order to render it to the screen. the last param is the slot of the binded texture
-	ASSERT(glGetUniformLocation(shader, "u_Texture") != -1);
-	glUniform1i(glGetUniformLocation(shader, "u_Texture"), 0);
-
+	//ASSERT(glGetUniformLocation(shader, "u_Texture") != -1);
+	//glUniform1i(glGetUniformLocation(shader, "u_Texture"), 0);
+	Shader.setUniform1i("u_Texture", 0);
 
 	//this will unbind everything before rebinding in loop
-	glUseProgram(0);
+	//glUseProgram(0);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	Shader.unbind();
 	ib.unbind();
 	vb.unbind();
 	va.unbind();
@@ -276,17 +268,17 @@ int main()
 	while (!glfwWindowShouldClose(Renderer.getWindow()))
 	{
 		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		//glClear(GL_COLOR_BUFFER_BIT);
+		Renderer.clear();
 		//rebound at runtime
-		glUseProgram(shader);
+		//glUseProgram(shader);
 		//glUniform4f(location, r, 0.8, 0.1, 1.0);
 		
 		//std::cout << glGetUniformLocation(shader, "u_Texture") << std::endl;
 		
 		//we can remove the arrtibpointer and attribarray from runtime and the bind buffer, just with binding the vao to get the same outcome
 		//we are linking the buffer to the vertex array in the vertexarribpointer.
-		va.bind();
+		//va.bind();
 		/* this is how it would be used if we only use one vertext array object could potenially be faster so use this way in other programs
 		   do not clear the vertex array object if using this way. 
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -297,8 +289,9 @@ int main()
 		*/
 
 		//count = number of indices
-		
-		call(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indicies);)
+		//Shader.bind();
+		//call(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indicies);)
+		Renderer.draw(va, ib, Shader);
 		
 			//just to show it changing the throug colours and demonstrate the use of uniforms.
 			/*if (r < 0) 
@@ -321,7 +314,7 @@ int main()
 		
 	}
 
-	glDeleteProgram(shader);
+	//glDeleteProgram(shader);
 
 	glfwTerminate();
 	return 0;

@@ -1,6 +1,20 @@
 #include "Renderer.h"
 
 
+void renderer::draw(const vertexArray& va, const indexBuffer& ib, const shader& Shader)
+{
+	va.bind();
+	ib.bind();
+
+	Shader.bind();
+	call(glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);)
+}
+
+void renderer::clear()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
 int renderer::createWindow()
 {
 

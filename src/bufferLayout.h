@@ -1,5 +1,4 @@
 #pragma once
-#include "Renderer.h"
 #include <vector>
 
 class bufferLayout 
@@ -52,7 +51,7 @@ public:
 		m_stride += sizeof(short) * count;
 	}
 	
-	inline const std::vector<bufferLayoutElements> getElements() const& { return elements; }; 
-	inline const unsigned int getStride() const& { return m_stride; }; 
+	inline std::vector<bufferLayoutElements> getElements() const& { return elements; }; 
+	inline unsigned int getStride() const& { return m_stride; }; 
 
 };

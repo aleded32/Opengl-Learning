@@ -1,4 +1,5 @@
 #include "vertexArray.h"
+#include "bufferLayout.h"
 
 vertexArray::vertexArray()
 	: m_offset(0)
