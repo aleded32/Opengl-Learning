@@ -4,6 +4,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <iostream>
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
 
 class shader 
 {
@@ -48,6 +50,15 @@ public:
 		unsigned int location = m_getUniformLocation(uniformName.c_str());
 		glUniform4f(location, v0, v1, v2, v3);
 	}
+
+	void setUniformMat4f(const std::string& uniformName, const glm::mat4& matrix) 
+	{
+		unsigned int location = m_getUniformLocation(uniformName.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+	}
+
+	
+
 
 	void setUniform1i(const std::string& uniformName, int v0)
 	{

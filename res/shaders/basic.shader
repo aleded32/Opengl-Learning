@@ -6,10 +6,13 @@ layout(location = 1)in vec2 texCoord;
 
 out vec2 v_texCoord;
 
+uniform mat4 u_MVP;
+
 void main()
 {
 	v_texCoord = texCoord;
-	gl_Position = position; 
+	//needs to be projecion x position not other way round as its not communitive
+	gl_Position = u_MVP * position; 
 	
 };
 
@@ -27,4 +30,5 @@ void main()
 {
 	vec4 texColor = texture(u_Texture, v_texCoord);
 	color = texColor;
+	
 };

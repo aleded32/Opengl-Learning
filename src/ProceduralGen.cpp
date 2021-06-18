@@ -2,6 +2,9 @@
 #include "vertexbuffer.h"
 #include "bufferLayout.h"
 #include "texture.h"
+#include "vendor/imgui/imgui.h"
+#include "vendor/imgui/imgui_impl_glfw.h"
+#include "vendor/imgui/imgui_impl_opengl3.h"
 
 
 /*struct shaderSourceProgram 
@@ -140,11 +143,17 @@ static unsigned int createShader(const std::string& vertexShader, const std::str
 int main() 
 {
 	
-	renderer Renderer(1280,720, "Test");
+	renderer Renderer(960,540, "Test");
 	Renderer.createWindow();
 	
+	//initalises imgui;
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsLight();
+	ImGui_ImplGlfw_InitForOpenGL(Renderer.getWindow(), true);
+	ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 
-	
 
 	glEnable(GL_DEBUG_OUTPUT); //enables debug output
 	glDebugMessageCallback(messageCallback, 0); // produces and calls back the error that was produced. 
@@ -152,10 +161,10 @@ int main()
 	//contains data about the vertex
 	float vertexPos[] =
 	{//  /vertex    / TexCoord  /
-		-0.5f, -0.5f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 1.0f, 0.0f,
-		 0.5f, 0.5f,  1.0f, 1.0f,
-		-0.5, 0.5f,   0.0, 1.0f,
+		100.0f, 100.0f, 0.0f, 0.0f,
+		 200.0f, 100.0f, 1.0f, 0.0f,
+		 200.0f, 200.0f,  1.0f, 1.0f,
+		100.0f, 200.0f,   0.0, 1.0f,
 
 	};
 
@@ -223,8 +232,29 @@ int main()
 	indexBuffer ib(indicies, 6);
 	ib.bind();
 
-	shader Shader("res/Shaders/basic.shader");
+	//setting our model view porjection matrix. basically allows us to manipulate the screen space.
+	//model = actual model position on screen.
+	//view = viewport or camera matrix 
+	//projection = position relativate to the space on screen, either 3D or 2D.
+	
+	//sets the projection.
+	glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f,1.0f);
 
+	//sets the view matrix by translating viewport 100pixels to the left and shifiting other geometry to the right in this instance.
+	glm::mat4 view= glm::translate(glm::mat4(1.0), glm::vec3(-100, 0, 0));
+
+	float angle = 180 * (3.141592 / 180);
+	//sets the translation/rotation/scale for the model object itself. 
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(250, 250, 0));
+	//model = glm::rotate(model, angle , glm::vec3(0,0, 1));
+	//model = glm::scale(model, glm::vec3(0.5f,0.5f,0));
+
+	//in other graphics api it is mvp not pvm like opengl due to being column abiding matrix reading instead of row
+	glm::mat4 mvp = proj * view * model;
+
+
+	shader Shader("res/Shaders/basic.shader");
+	//Shader.setUniformMat4f("u_MVP", mvp);
 	//shader will be read from file
 	//shaderSourceProgram source = ParseShader("res/shaders/basic.shader");
 	/*std::cout << "vertex" << std::endl;
@@ -253,6 +283,7 @@ int main()
 	//ASSERT(glGetUniformLocation(shader, "u_Texture") != -1);
 	//glUniform1i(glGetUniformLocation(shader, "u_Texture"), 0);
 	Shader.setUniform1i("u_Texture", 0);
+	
 
 	//this will unbind everything before rebinding in loop
 	//glUseProgram(0);
@@ -262,7 +293,8 @@ int main()
 	vb.unbind();
 	va.unbind();
 	
-
+	glm::vec3 translation = glm::vec3(0, 0, 0);
+	bool tabOpen = true;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(Renderer.getWindow()))
@@ -270,6 +302,18 @@ int main()
 		/* Render here */
 		//glClear(GL_COLOR_BUFFER_BIT);
 		Renderer.clear();
+
+		//imgui new frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+		glm::mat4 mvp = proj * view * model;
+
+		Shader.setUniformMat4f("u_MVP", mvp);
+
 		//rebound at runtime
 		//glUseProgram(shader);
 		//glUniform4f(location, r, 0.8, 0.1, 1.0);
@@ -287,6 +331,9 @@ int main()
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		*/
+		{
+			ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+		}
 
 		//count = number of indices
 		//Shader.bind();
@@ -305,6 +352,10 @@ int main()
 
 		r += increment;
 		*/
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		/* Swap front and back buffers */
 		glfwSwapBuffers(Renderer.getWindow());
 
@@ -315,6 +366,9 @@ int main()
 	}
 
 	//glDeleteProgram(shader);
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;

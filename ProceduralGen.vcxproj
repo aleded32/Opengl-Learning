@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\bufferLayout.cpp" />
     <ClCompile Include="src\ProceduralGen.cpp">
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
@@ -152,12 +153,20 @@
     <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\vertexbuffer.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.shader" />
+    <None Include="res\shaders\basic.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\bufferLayout.h" />
@@ -165,6 +174,14 @@
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\texture.h" />
+    <ClInclude Include="src\vendor\imgui\imconfig.h" />
+    <ClInclude Include="src\vendor\imgui\imgui.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\vertexArray.h" />
     <ClInclude Include="src\vertexbuffer.h" />
     <ClInclude Include="src\stb_image.h" />

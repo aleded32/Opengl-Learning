@@ -4,6 +4,8 @@
 #include "indexBuffer.h"
 #include "vertexArray.h"
 #include "shader.h"
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
 
 //this is macro that allows us to break the debugger by asserting itself when the error boolean is true. 
  //debugbreak is visual studio compiler specific; 
